@@ -1,0 +1,480 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2/"
+     xml:base="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Exercise2="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#contains -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#contains">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#City"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#employs -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#employs">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Staff"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#hasAtmosphere -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#hasAtmosphere">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Ambiance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#offers -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#offers">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#reviews -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#reviews">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#serves -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#serves">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#crowded -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#crowded">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#description -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#description">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Ambiance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#diversity -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#diversity">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#friendliness -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#friendliness">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Staff"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#price -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#price">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#quality -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#quality">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#sentiment -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#sentiment">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#size -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#size">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#speed -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#speed">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#temperature -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#temperature">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#type -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#type">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#valueforMoney -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#valueforMoney">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#variety -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#variety">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#waitingTime -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#waitingTime">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Alcoholic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Alcoholic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Nonalcoholic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Ambiance -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Ambiance"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#City -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#City"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food">
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Nonalcoholic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Nonalcoholic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Staff -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Staff"/>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Service"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Atmosphere1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Atmosphere1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Ambiance"/>
+        <Exercise2:description>lacklustre</Exercise2:description>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beer -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beer">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Alcoholic"/>
+        <Exercise2:variety>limited</Exercise2:variety>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Coke -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Coke">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Nonalcoholic"/>
+        <Exercise2:variety>limited</Exercise2:variety>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn"/>
+        <Exercise2:speed>quick</Exercise2:speed>
+        <Exercise2:waitingTime>10mins</Exercise2:waitingTime>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn2">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn"/>
+        <Exercise2:speed>quickly</Exercise2:speed>
+        <Exercise2:waitingTime>half an hour or so</Exercise2:waitingTime>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#FriendlyStaff -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#FriendlyStaff">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Staff"/>
+        <Exercise2:friendliness>super friendly</Exercise2:friendliness>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Napoli -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Napoli">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#City"/>
+        <Exercise2:contains rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#da_Michele"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Pizza -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Pizza">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Food"/>
+        <Exercise2:price>5 euros</Exercise2:price>
+        <Exercise2:quality>absolutely delicious crust, thin base and toppings</Exercise2:quality>
+        <Exercise2:quality>bit heavier dough</Exercise2:quality>
+        <Exercise2:size>big</Exercise2:size>
+        <Exercise2:size>huge</Exercise2:size>
+        <Exercise2:temperature>Piping hot</Exercise2:temperature>
+        <Exercise2:type>Margherita</Exercise2:type>
+        <Exercise2:variety>4 different</Exercise2:variety>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Review1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Review1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience"/>
+        <Exercise2:reviews rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#da_Michele"/>
+        <Exercise2:sentiment>I would definetley recommend trying it</Exercise2:sentiment>
+        <Exercise2:sentiment>it did not live up to the hype</Exercise2:sentiment>
+        <Exercise2:sentiment>there is at least 1 pizzeria better than this</Exercise2:sentiment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Review2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Review2">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience"/>
+        <Exercise2:reviews rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#da_Michele"/>
+        <Exercise2:sentiment>great, old school no frills Napoli pizza experience, this is a great option</Exercise2:sentiment>
+        <Exercise2:sentiment>very very good</Exercise2:sentiment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Review3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Review3">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#CustomerExperience"/>
+        <Exercise2:reviews rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#da_Michele"/>
+        <Exercise2:sentiment>definitely worth the wait</Exercise2:sentiment>
+        <Exercise2:sentiment>don&apos;t leave Napoli without visiting this place</Exercise2:sentiment>
+        <Exercise2:sentiment>the best pizza in Napoli</Exercise2:sentiment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway"/>
+        <Exercise2:speed>totally worth the wait</Exercise2:speed>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Water -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Water">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Nonalcoholic"/>
+        <Exercise2:variety>limited</Exercise2:variety>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#da_Michele -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#da_Michele">
+        <rdf:type rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Restaurant"/>
+        <Exercise2:employs rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#FriendlyStaff"/>
+        <Exercise2:hasAtmosphere rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Atmosphere1"/>
+        <Exercise2:offers rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn1"/>
+        <Exercise2:offers rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#DineIn2"/>
+        <Exercise2:offers rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#TakeAway1"/>
+        <Exercise2:serves rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Beer"/>
+        <Exercise2:serves rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Coke"/>
+        <Exercise2:serves rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Pizza"/>
+        <Exercise2:serves rdf:resource="http://www.semanticweb.org/danyez87/ontologies/2024/10/Exercise2#Water"/>
+        <Exercise2:crowded>too busy</Exercise2:crowded>
+        <Exercise2:valueforMoney>affordable</Exercise2:valueforMoney>
+        <Exercise2:valueforMoney>yes</Exercise2:valueforMoney>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
