@@ -1,0 +1,8 @@
+5 1
+Hardworking ; ; 0.6
+Intelligent ; ; 0.7
+Good_test_taker ; Intelligent ; 0.8 0.5
+Understands_material ; Intelligent Hardworking; 0.9 0.3 0.5 0.1
+high_Exam_score ; Good_test_taker Understands_material ; 0.9 0.5 0.7 0.3
+Intelligent=1 | high_Exam_score=1
+0.767
