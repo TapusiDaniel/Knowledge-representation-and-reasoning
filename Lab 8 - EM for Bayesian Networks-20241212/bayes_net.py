@@ -37,22 +37,31 @@ def factor_crossjoin(f1: pd.DataFrame, f2: pd.DataFrame, how: str = "outer", **k
 def multiply_factors(f1: pd.DataFrame, f2: pd.DataFrame) -> pd.DataFrame:
     f1_vars = f1.index.names
     f2_vars = f2.index.names
-
+    
     common_vars = [v for v in f1_vars if v in f2_vars]
-
+    
     if not common_vars:
-        ### we have to do a cross join
-        f_res = factor_crossjoin(f1, f2)  # Changed from BayesNode.factor_crossjoin
+        f_res = factor_crossjoin(f1, f2)
         f_res["prob"] = f_res["prob_x"] * f_res["prob_y"]
         f_res = f_res.drop(columns=["prob_x", "prob_y"])
     else:
-        ### there is a set of common vars, so we merge on them
-        disjoint_vars = [v for v in f1_vars if v not in f2_vars] + [v for v in f2_vars if v not in f1_vars]
-        f_res = pd.merge(f1.reset_index(), f2.reset_index(), on=common_vars, how="inner")\
-            .set_index(keys=disjoint_vars + common_vars)
-        f_res["prob"] = f_res["prob_x"] * f_res["prob_y"]
-        f_res = f_res.drop(columns=["prob_x", "prob_y"])
-
+        disjoint_vars = [v for v in f1_vars if v not in f2_vars] + \
+                       [v for v in f2_vars if v not in f1_vars]
+        try:
+            f_res = pd.merge(f1.reset_index(), 
+                           f2.reset_index(), 
+                           on=common_vars, 
+                           how="inner").set_index(keys=disjoint_vars + common_vars)
+            f_res["prob"] = f_res["prob_x"] * f_res["prob_y"]
+            f_res = f_res.drop(columns=["prob_x", "prob_y"])
+        except Exception as e:
+            print(f"Error in multiply_factors: {e}")
+            return None
+    
+    # Normalizăm pentru a preveni underflow
+    if f_res["prob"].sum() > 0:
+        f_res["prob"] = f_res["prob"] / f_res["prob"].sum()
+        
     return f_res
 
 
@@ -67,8 +76,11 @@ def sumout(f:pd.DataFrame, vars: List[str]) -> pd.DataFrame or float:
         return f["prob"].sum()
 
 
-def normalize(f:pd.DataFrame) -> pd.DataFrame:
-    f["prob"] = f["prob"] / f["prob"].sum()
+def normalize(f: pd.DataFrame) -> pd.DataFrame:
+    sum_probs = f["prob"].sum()
+    if sum_probs > 0:
+        f = f.copy()
+        f["prob"] = f["prob"] / sum_probs
     return f
 
 
@@ -330,20 +342,21 @@ class JunctionTree:
         return nx.moral_graph(g)
 
     def _triangulate(self, h: nx.Graph) -> nx.Graph:
-        # copy = h.copy()
-        # nodes = list(copy.nodes())
+        # Versiunea actuală folosește complete_to_chordal_graph care poate să nu fie optimă
+        # Să folosim o implementare mai robustă:
+        copy = h.copy()
+        nodes = list(copy.nodes())
 
-        # while nodes:
-        #     min_degree_node = min(nodes, key=lambda x: copy.degree(x))
-        #     neighbours = list(copy.neighbors(min_degree_node))
-        #     for i in range(len(neighbours)):
-        #         for j in range(i + 1, len(neighbours)):
-        #             copy.add_edge(neighbours[i], neighbours[j])
+        while nodes:
+            min_degree_node = min(nodes, key=lambda x: copy.degree(x))
+            neighbours = list(copy.neighbors(min_degree_node))
+            for i in range(len(neighbours)):
+                for j in range(i + 1, len(neighbours)):
+                    copy.add_edge(neighbours[i], neighbours[j])
             
-        #     nodes.remove(min_degree_node)
+            nodes.remove(min_degree_node)
         
-        # return copy
-        return nx.algorithms.chordal.complete_to_chordal_graph(h)[0]
+        return copy
 
     def _create_clique_graph(self, th: nx.Graph) -> nx.Graph:
         cliques = list(nx.chordal_graph_cliques(th))
@@ -352,19 +365,19 @@ class JunctionTree:
         # Add a node in the clique graph + has the variables from that clique
         for i, clique in enumerate(cliques):
             clique_name = ''.join(sorted(clique)) 
-            clique_graph.add_node(clique_name, factor_vars=list(clique))
+            clique_graph.add_node(clique_name, 
+                                factor_vars=list(clique),
+                                clique_members=list(clique),  # Add clique_members attribute
+                                factors=[],  # Initialize empty factors list
+                                potential=None)  # Initialize potential as None
         
         for i in range(len(cliques)):
             for j in range(i + 1, len(cliques)):
                 intersection_size = len(set(cliques[i]) & set(cliques[j]))
-                if intersection_size > 0: # If the intersection exists we add an edge between the i and j nodes and a weight
+                if intersection_size > 0:
                     clique1_name = ''.join(sorted(cliques[i]))
                     clique2_name = ''.join(sorted(cliques[j]))
                     clique_graph.add_edge(clique1_name, clique2_name, weight=intersection_size)
-        
-        # Print nodes and edges in desired format
-        # print(list(clique_graph.nodes()))
-        # print(list(clique_graph.edges()))
         
         return clique_graph
 
@@ -397,25 +410,38 @@ class JunctionTree:
 
         return t
 
-    def _load_factors(self) -> None:
+    def _load_factors(self, jt: nx.DiGraph = None) -> None:
         """
         Compute initial node potentials, by loading the factors from the original bayesian network.
         Each factor from the original bayesian network is assigned to a **single** node in the clique tree,
         with the condition that **all** factor vars be included in the clique node vars.
         """
-        # Initialize factor attribute for each node
-        nx.set_node_attributes(self.clique_tree, {node: [] for node in self.clique_tree.nodes()}, "factors")
+        if jt is None:
+            jt = self.clique_tree
+            
+        # Initialize factor and potential attributes for each node
+        for node in jt.nodes():
+            jt.nodes[node]["factors"] = []
+            jt.nodes[node]["potential"] = None
         
         for node_name, bn_node in self.bn.nodes.items():
-            factor = bn_node.to_factor() # Convert the probability table into a factor
-            factor_vars = set(factor.vars) 
+            factor = bn_node.to_factor()
+            factor_vars = set(factor.vars)
             
             # Find a clique that contains all the factor variables
             assigned = False
-            for clique_node in self.clique_tree.nodes():
-                clique_vars = set(self.clique_tree.nodes[clique_node]["factor_vars"])
+            for clique_node in jt.nodes():
+                clique_vars = set(jt.nodes[clique_node]["factor_vars"])
                 if factor_vars.issubset(clique_vars):
-                    self.clique_tree.nodes[clique_node]["factors"].append(factor) # Add the factor to the list of factors 
+                    jt.nodes[clique_node]["factors"].append(factor)
+                    # Initialize or update potential
+                    if jt.nodes[clique_node]["potential"] is None:
+                        jt.nodes[clique_node]["potential"] = factor.table.copy()
+                    else:
+                        jt.nodes[clique_node]["potential"] = multiply_factors(
+                            jt.nodes[clique_node]["potential"], 
+                            factor.table
+                        )
                     assigned = True
                     break
                     
@@ -439,29 +465,32 @@ class JunctionTree:
         return t
 
     def _incorporate_evidence(self, jt: nx.DiGraph, evidence: Dict[str, int]) -> nx.DiGraph:
-        """
-        Incorporate the evidence. For each variable in the `evidence' dictionary, choose **one** node of the
-        Junction Tree and reduce the factor table (pd.DataFrame) of that node to the set of value combinations (index)
-        matching the value of the observed evidence variable.
-        :param jt: the initial uncalibrated Junction Tree with factors loaded from the original bayesian network
-        :param evidence: a dictionary of observed variables
-
-        :return: The uncalibrated junction tree with incorporated evidence
-        """
-        jt_copy = jt.copy()
+        jt_copy = deepcopy(jt)  # Folosim deepcopy pentru a evita modificări nedorite
         
         for ev_var, ev_val in evidence.items():
             ev_val = int(ev_val)
+            assigned = False
             for node in jt_copy.nodes():
-                if ev_var in jt_copy.nodes[node]["factor_vars"]: # Search for a clique that has the observed variable
-                    for factor in jt_copy.nodes[node]["factors"]: 
-                        if ev_var in factor.vars: # Search for the factors that have the observed variable
-                            # Create indicator factor for evidence
-                            indicator = pd.DataFrame(index=pd.MultiIndex.from_tuples([(ev_val,)], names=[ev_var]),
-                                                columns=["prob"],
-                                                data=[1.0])
-                            factor.table = multiply_factors(factor.table, indicator) # Fix the variable at the observed value, by multiplying with the indicator factor
-                    break
+                if ev_var in jt_copy.nodes[node]["factor_vars"]:
+                    if not assigned:  # Incorporăm evidența doar o dată
+                        potential = None
+                        for factor in jt_copy.nodes[node]["factors"]:
+                            if ev_var in factor.vars:
+                                # Creăm indicator factor
+                                indicator = pd.DataFrame(
+                                    index=pd.MultiIndex.from_tuples([(ev_val,)], names=[ev_var]),
+                                    columns=["prob"],
+                                    data=[1.0]
+                                )
+                                if potential is None:
+                                    potential = multiply_factors(factor.table, indicator)
+                                else:
+                                    potential = multiply_factors(potential, indicator)
+                        
+                        if potential is not None:
+                            jt_copy.nodes[node]["potential"] = potential
+                            assigned = True
+                            break
         
         return jt_copy
 
@@ -516,20 +545,24 @@ class JunctionTree:
             self._distribute_evidence(jt, child, node)
 
     def _run_belief_propagation(self, uncalibrated_jt) -> nx.DiGraph:
-        """
-        Run the upward and downward passes in the Belief propagation algorithm to calibrate
-        :param uncalibrated_jt: The uncalibrated Junction Tree obtained after incorporating the evidence
-        :return: The calibrated Junction tree
-        """
-        calibrated_jt = uncalibrated_jt.copy()
-    
-        # Get root node
+        calibrated_jt = deepcopy(uncalibrated_jt)
+        
+        # Găsim rădăcina
         root = [n for n in calibrated_jt.nodes() if calibrated_jt.in_degree(n) == 0][0]
         
-        # Upward pass (collect evidence)
+        # Inițializăm potențialele pentru toate nodurile
+        for node in calibrated_jt.nodes():
+            if calibrated_jt.nodes[node]["factors"]:
+                potential = calibrated_jt.nodes[node]["factors"][0].table
+                for i in range(1, len(calibrated_jt.nodes[node]["factors"])):
+                    potential = multiply_factors(potential, 
+                                            calibrated_jt.nodes[node]["factors"][i].table)
+                calibrated_jt.nodes[node]["potential"] = potential
+        
+        # Upward pass
         self._collect_evidence(calibrated_jt, root)
         
-        # Downward pass (distribute evidence) 
+        # Downward pass
         self._distribute_evidence(calibrated_jt, root)
         
         return calibrated_jt
@@ -648,7 +681,7 @@ class JunctionTree:
 
 
 if __name__ == "__main__":
-    bn = BayesNet(bn_file="bn_learning")
+    bn = BayesNet(bn_file="data/bn_learning")
     jt = JunctionTree(bn=bn)
     jt.run_queries(bn.queries)
     tree = jt._get_clique_tree()

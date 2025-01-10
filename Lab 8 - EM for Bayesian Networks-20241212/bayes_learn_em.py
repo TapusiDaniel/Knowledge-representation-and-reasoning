@@ -1,9 +1,10 @@
 from typing import List, Dict, Tuple, Any, Iterator
-from bayes_net import BayesNet, BayesNode
+from bayes_net import BayesNet, BayesNode, JunctionTree, normalize
 from itertools import product
 import numpy as np
 from argparse import ArgumentParser, Namespace
-
+import pandas as pd
+from tqdm import tqdm
 
 def all_dicts(variables: List[str]) -> Iterator[Dict[str, int]]:
     for keys in product(*([[0, 1]] * len(variables))):
@@ -98,129 +99,133 @@ class MLEBayesNet(BayesNet):
 
 
 class EMBayesNet(MLEBayesNet):
-    def __init__(self, bn_file: str = "data/bnet") -> None:
-        super(EMBayesNet, self).__init__(bn_file=bn_file)
-        self.cpds = {}  # type: Dict[str, Dict[tuple, float]]
+    def __init__(self) -> None:  
+        super(EMBayesNet, self).__init__(bn_file="data/bn_learning") 
+        self.cpds = {}
 
     def learn_cpds(self, samples_with_missing: List[Dict[str, int]], alpha: float = 1.):
-    # Step 1: Initialize parameters θ0i,j,k randomly
+        # Initialize CPDs with random probabilities
         for node_name in self.nodes:
             node = self.nodes[node_name]
-            parents = [parent.var_name for parent in node.parent_nodes]
-            parent_combinations = list(all_dicts(parents))
-            
-            probabilities = []
-            for parent in parent_combinations:
-                # Ensure probabilities sum to 1 for each parent combination
-                values_prob = np.random.dirichlet([1, 1])
-                probabilities.extend([
-                    (0, parent, values_prob[0]),
-                    (1, parent, values_prob[1])
-                ])
-                
-            cpd_table = {
-                "prob": [p[2] for p in probabilities],
-                "value": [p[0] for p in probabilities],
-            }
-            for parent in parents:
-                cpd_table[parent] = [dict(p[1])[parent] for p in probabilities]
-                
-            node.cpd = cpd_table
+            parent_names = [p.var_name for p in node.parent_nodes]
+            parent_combos = list(product([0, 1], repeat=len(parent_names)))
+            for parent_vals in parent_combos:
+                p1 = np.random.uniform(0.3, 0.7)
+                index_0 = tuple([0] + list(parent_vals))
+                index_1 = tuple([1] + list(parent_vals))
+                node.cpd.loc[index_0, "prob"] = 1 - p1
+                node.cpd.loc[index_1, "prob"] = p1
 
-        # Repeat E-M steps for specified number of iterations
-        num_iterations = 100
-        for iteration in range(num_iterations):
-            # E-step
-            # Initialize expected counts N^i,j,k
-            expected_counts = {node_name: {tuple(pc.items()): {0: 0.0, 1: 0.0} 
-                            for pc in all_dicts([parent.var_name for parent in self.nodes[node_name].parent_nodes])}
-                            for node_name in self.nodes}
-            
-            # Iterate through all samples
-            for sample in samples_with_missing:
-                # Get observed variables (Xo,d)
-                observed_vars = {var: val for var, val in sample.items() if val != 2}
-                
-                # For each node Xi
-                for node_name in self.nodes:
-                    node = self.nodes[node_name]
-                    parents = [parent.var_name for parent in node.parent_nodes]
-                    
-                    # Find clique containing Xi and its parents
-                    # (Presupunem că avem o metodă pentru a găsi clica relevantă)
-                    relevant_vars = set([node_name] + parents)
-                    
-                    # Compute γ(d)i,j,k using Junction Tree algorithm
-                    if node_name in observed_vars:
-                        # For observed variables, add direct counts
-                        val = sample[node_name]
-                        parent_values = tuple((p, sample.get(p, 0)) for p in parents)
-                        expected_counts[node_name][parent_values][val] += 1
-                    else:
-                        # For missing variables, compute probabilities using Junction Tree
-                        for parent_combo in all_dicts(parents):
-                            parent_values = tuple(parent_combo.items())
-                            
-                            # Calculate probabilities for both values (0 and 1)
-                            for value in [0, 1]:
-                                # Create temporary sample with current configuration
-                                temp_sample = observed_vars.copy()
-                                temp_sample[node_name] = value
-                                temp_sample.update(parent_combo)
-                                
-                                # Calculate γ(d)i,j,k using Junction Tree belief propagation
-                                # This should use the clique potentials (φ*Cz)
-                                prob = np.exp(self.sample_log_prob(temp_sample))
-                                
-                                # Add to expected counts
-                                expected_counts[node_name][parent_values][value] += prob
+        # Create Junction Tree
+        junction_tree = JunctionTree(self)
 
-            # M-step: Update parameters using expected counts
+        max_iterations = 30
+        prev_log_likelihood = float('-inf')
+
+        for iteration in tqdm(range(max_iterations), desc="EM Iterations"):
+            # E-step: Compute expected counts
+            expected_counts = {node_name: {} for node_name in self.nodes}
             for node_name in self.nodes:
                 node = self.nodes[node_name]
-                parents = [parent.var_name for parent in node.parent_nodes]
-                parent_combinations = list(all_dicts(parents))
-                
-                probabilities = []
-                for parent in parent_combinations:
-                    parent_values = tuple(parent.items())
-                    
-                    # Calculate total counts for normalization
-                    total = sum(expected_counts[node_name][parent_values].values()) + 2 * alpha
-                    
-                    # Update probabilities with Laplace smoothing
-                    for value in [0, 1]:
-                        count = expected_counts[node_name][parent_values][value]
-                        prob = (count + alpha) / total
-                        probabilities.append((value, parent, prob))
-                
-                # Update node's CPD
-                cpd_table = {
-                    "prob": [p[2] for p in probabilities],
-                    "value": [p[0] for p in probabilities],
-                }
-                for parent in parents:
-                    cpd_table[parent] = [dict(p[1])[parent] for p in probabilities]
-                    
-                node.cpd = cpd_table
+                parent_names = [p.var_name for p in node.parent_nodes]
+                parent_combos = list(product([0, 1], repeat=len(parent_names)))
 
+                for parent_vals in parent_combos:
+                    for val in [0, 1]:
+                        index = tuple([val] + list(parent_vals))
+                        expected_counts[node_name][index] = 0.0
 
+            # Process each sample
+            directed_jt = junction_tree._get_junction_tree()
+            log_likelihood = 0.0
+
+            for sample in tqdm(samples_with_missing, desc=f"Processing samples (iteration {iteration + 1})", leave=False):
+                # Get observed variables (non-missing values)
+                evidence = {var: val for var, val in sample.items() if val != 2}
+
+                # Get junction tree and load factors
+                junction_tree._load_factors(directed_jt)
+                uncalibrated_jt = junction_tree._incorporate_evidence(directed_jt, evidence)
+                
+                try:
+                    calibrated_jt = junction_tree._run_belief_propagation(uncalibrated_jt)
+                except Exception as e:
+                    print(f"Error in belief propagation: {e}")
+                    continue
+
+                # Update expected counts
+                for node_name in self.nodes:
+                    node = self.nodes[node_name]
+                    parent_names = [p.var_name for p in node.parent_nodes]
+
+                    if node_name in evidence:
+                        # For observed variables
+                        val = evidence[node_name]
+                        parent_vals = []
+                        for p in parent_names:
+                            parent_vals.append(evidence.get(p, 0))
+                        index = tuple([val] + parent_vals)
+                        expected_counts[node_name][index] += 1.0
+                    else:
+                        # For missing values
+                        for clique in calibrated_jt.nodes:
+                            if node_name in calibrated_jt.nodes[clique]['clique_members']:
+                                potential = calibrated_jt.nodes[clique]['potential']
+                                normalized_pot = normalize(potential.copy())
+
+                                for val in [0, 1]:
+                                    if node_name in normalized_pot.index.names:
+                                        mask = normalized_pot.index.get_level_values(node_name) == val
+                                        prob = normalized_pot[mask]['prob'].sum()
+
+                                        parent_vals = []
+                                        for p in parent_names:
+                                            parent_vals.append(evidence.get(p, 0))
+
+                                        index = tuple([val] + parent_vals)
+                                        expected_counts[node_name][index] += prob
+                                        if prob > 0:
+                                            log_likelihood += np.log(prob)
+                                break
+
+            # M-step: Update CPDs
+            for node_name in tqdm(self.nodes, desc="Updating CPDs", leave=False):
+                node = self.nodes[node_name]
+                parent_names = [p.var_name for p in node.parent_nodes]
+                parent_combos = list(product([0, 1], repeat=len(parent_names)))
+
+                for parent_vals in parent_combos:
+                    count_0 = expected_counts[node_name][tuple([0] + list(parent_vals))]
+                    count_1 = expected_counts[node_name][tuple([1] + list(parent_vals))]
+                    total = count_0 + count_1 + 2 * alpha
+
+                    node.cpd.loc[tuple([0] + list(parent_vals)), "prob"] = (count_0 + alpha) / total
+                    node.cpd.loc[tuple([1] + list(parent_vals)), "prob"] = (count_1 + alpha) / total
+
+            # Check convergence
+            diff = log_likelihood - prev_log_likelihood
+            print(f"Log likelihood difference: {diff}")
+            if abs(diff) < 1e-4:
+                print(f"\nEM converged after {iteration + 1} iterations")
+                break
+
+            prev_log_likelihood = log_likelihood
 
 def get_args() -> Namespace:
     arg_parser = ArgumentParser()
     arg_parser.add_argument("-f", "--file",
                             type=str,
-                            default="bn_learning",
+                            default="data/bn_learning",
                             dest="file_name",
                             help="Input file")
     arg_parser.add_argument("-s", "--samplefile",
                             type=str,
-                            default="samples_bn_learning",
+                            default="bnlearning_samples_missing",
                             dest="samples_file_name",
                             help="Samples file")
     arg_parser.add_argument("-n", "--nsteps",
                             type=int,
-                            default=10000,
+                            default=1000,
                             dest="nsteps",
                             help="Number of optimization steps")
     arg_parser.add_argument("--lr",
@@ -235,7 +240,7 @@ def get_args() -> Namespace:
 def main():
     args = get_args()
     table_bn = BayesNet(bn_file=args.file_name)
-    em_bn = EMBayesNet(bn_file=args.file_name)
+    em_bn = EMBayesNet()
 
     print("========== EM ==========")
     samples = read_samples(args.samples_file_name)
